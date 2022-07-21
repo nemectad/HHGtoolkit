@@ -40,12 +40,12 @@ import matplotlib.pyplot as plt
 import matplotlib.axes as axes
 from matplotlib.figure import Figure
 from matplotlib.colors import LogNorm, Normalize
-import utilities as util
-from utilities import Data     # import data class
-import conversions as conv
-import process as process
+import HHGtoolkit.utilities as util
+from HHGtoolkit.utilities import Data     # import data class
+import HHGtoolkit.conversions as conv
+import HHGtoolkit.process as process
 from scipy.signal.windows import *
-import Hfn2 as hfn
+import HHGtoolkit.Hfn2 as hfn
 import mynumerics.mynumerics as mn
 
 

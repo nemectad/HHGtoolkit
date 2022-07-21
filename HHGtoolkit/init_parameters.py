@@ -1,9 +1,9 @@
 import numpy as np
-import conversions as conv
+import HHGtoolkit.conversions as conv
 import process as proc
 import subprocess as s
 import os
-import utilities as util
+import HHGtoolkit.utilities as util
 
 ### Write a line of variables into a file
 def write_ln(file, var, val, type_, unit, comment=""):

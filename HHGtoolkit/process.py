@@ -2,9 +2,9 @@ import numpy as np
 from scipy.fftpack import fft, ifft, fftfreq
 from scipy.signal.windows import *
 from scipy.signal import hilbert
-import utilities as util
+import HHGtoolkit.utilities as util
 import mynumerics as mn
-import Hfn2 as hfn
+import HHGtoolkit.Hfn2 as hfn
 
 
 def spectrum(arr, t_step):

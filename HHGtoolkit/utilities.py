@@ -2,7 +2,7 @@ import h5py
 import numpy as np
 import os
 import re
-import conversions as conv
+import HHGtoolkit.conversions as conv
 import matplotlib.pyplot as plt
 
 
