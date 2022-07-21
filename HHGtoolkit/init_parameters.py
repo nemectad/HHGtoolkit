@@ -1,6 +1,6 @@
 import numpy as np
 import HHGtoolkit.conversions as conv
-import process as proc
+import HHGtoolkit.process as proc
 import subprocess as s
 import os
 import HHGtoolkit.utilities as util
