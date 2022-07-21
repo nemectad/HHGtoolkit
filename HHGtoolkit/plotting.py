@@ -1213,7 +1213,7 @@ def plot_Gabor_transform(
     ### Time step
     T_step = t[1]-t[0]
     ### Number of steps per frequency of the fundamental field
-    N_steps_per_freq = int(freq_0*t[-1]) + 1
+    N_steps_per_freq = int(freq_0*(t[-1]-t[0])) + 1
     N_cycl_1 = data.N_cycl_1
 
     ### Number of samplepoints
