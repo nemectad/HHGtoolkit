@@ -296,6 +296,11 @@ def prompt_input(filename):
     )
 
     N = 1
+    w0_1 = 1e-4
+    w0_2 = 1e-4
+    z0_1 = 0.
+    z0_2 = 0.
+    z_target = 0.
 
     gaussian = ask("? Do you want Gaussian intensity profile for the fields? ")
     if(gaussian):
