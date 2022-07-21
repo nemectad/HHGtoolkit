@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     # Needed to silence warnings (and to be a worthwhile package)
     name='HHGtoolkit',
-    url='',
+    url='https://github.com/nemectad/HHGtoolkit',
     author='Tadeas Nemec',
     author_email='nemectad@fjfi.cvut.cz',
     # Needed to actually package something
