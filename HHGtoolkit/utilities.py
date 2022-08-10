@@ -250,6 +250,7 @@ class Beams:
         ### Axis labels
         ax.set_xlabel(r"$z$ [m]")
         ax.set_ylabel(r"$w(z)$ [m]")
+        plt.ticklabel_format(axis="y", style="sci", scilimits=[-3,3])
 
         ax.legend(loc = 1)
 
@@ -277,7 +278,7 @@ class Beams:
         ### beam with lambda (lamb), beam waist (w_0) and amplitude (amp)
         ### Note: without the Gouy phase term
         GaussianBeam = lambda r, z, z_0, w_0, lamb, amp: \
-            amp*w_0/w(w_0, lamb, z_0, z_target)*np.exp(-np.power(r/w(w_0, lamb, z_0, z_target), 2))*\
+            amp*w_0/w(w_0, lamb, z_0, z)*np.exp(-np.power(r/w(w_0, lamb, z_0, z), 2))*\
             np.exp(-1j*2*np.pi/lamb*r*r/2*R_reciprocal(z-z_0, w_0, lamb) ) 
 
         ### Gouy phase term

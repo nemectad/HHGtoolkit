@@ -6,7 +6,8 @@ import HHGtoolkit.utilities as util
 import mynumerics as mn
 import HHGtoolkit.Hfn2 as hfn
 
-
+### Issue: for arrays of different lengths but same data, i.e. different T_max
+### we need to multiply the result by T_max 
 def spectrum(arr, t_step):
     N = np.shape(arr)[-1]
 

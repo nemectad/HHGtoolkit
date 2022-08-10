@@ -50,7 +50,7 @@ import mynumerics.mynumerics as mn
 
 
 matplotlib.rcParams.update({
-    "text.usetex": True
+    "text.usetex": False
 })
 
 ### Plot dipole fourier transform
@@ -181,7 +181,7 @@ def plot_spectrum(
             spectrum_x[range_],
             tf[range_],
             zdir="x",
-            label=r"$|D(\omega)|^2$",
+            label=r"$|D(\omega)|$",
             color="black",
             linewidth="1"
         )
@@ -194,7 +194,7 @@ def plot_spectrum(
             ax.plot(
                 tf,
                 spectrum_z,
-                label=r"$|D_{z}(\omega)|^2$",
+                label=r"$|D_{z}(\omega)|$",
                 color="black",
                 linewidth=1,
             )
@@ -202,7 +202,7 @@ def plot_spectrum(
             ax.plot(
                 tf,
                 spectrum_x,
-                label=r"$|D_{x}(\omega)|^2$",
+                label=r"$|D_{x}(\omega)|$",
                 color="crimson",
                 linewidth=1,
             )
@@ -221,13 +221,13 @@ def plot_spectrum(
     ax.set_xlim(omegas[omega_min], omegas[omega_max])
     ax.set_ylim(y_min, max([spectrum_z[N_steps_per_freq*omega_min:-1].max(),
                 spectrum_x[N_steps_per_freq*omega_min:-1].max()])*1.2)
-    ax.set_ylabel(r"$|D(\omega)|^2$ [arb.u.]", fontsize=13)
+    ax.set_ylabel(r"$|D(\omega)|$ [arb.u.]", fontsize=13)
 
     if plot_3D:
         ax.set_zlim(y_min, max([spectrum_z[N_steps_per_freq*omega_min:-1].max(),
                 spectrum_x[N_steps_per_freq*omega_min:-1].max()])*1.2)
-        ax.set_zlabel(r"$|D_x(\omega)|^2$ [arb.u.]", fontsize=13)
-        ax.set_ylabel(r"$|D_z(\omega)|^2$ [arb.u.]", fontsize=13)
+        ax.set_zlabel(r"$|D_x(\omega)|$ [arb.u.]", fontsize=13)
+        ax.set_ylabel(r"$|D_z(\omega)|$ [arb.u.]", fontsize=13)
     else:
         plt.yscale(plot_scale)
         fig.set_size_inches(figsize)
@@ -320,10 +320,10 @@ def plot_scan(
     ### Compute spectrum and time domain for spectrum
     if (plot_component == "x"):
         z, tf = process.spectrum([data.d_x for data in ds], T_step)
-        lbl = r"$|D_x(\omega)|^2$"
+        lbl = r"$|D_x(\omega)|$"
     else:
         z, tf = process.spectrum([data.d_z for data in ds], T_step)
-        lbl = r"$|D_z(\omega)|^2$"
+        lbl = r"$|D_z(\omega)|$"
 
     ### Setting ticks
     ### x-axis
@@ -356,7 +356,7 @@ def plot_scan(
 
     ax.set_title(lbl)
 
-    fig.colorbar(c, ax=ax, label=r"$|D(\omega)|^2$ [arb.u.]")
+    fig.colorbar(c, ax=ax, label=r"$|D(\omega)|$ [arb.u.]")
 
     ### Setting ticks
     ### y-axis
@@ -1340,9 +1340,9 @@ def plot_Gabor_transform(
         ax2.set_yticklabels(energies_ticks, fontsize = 12)
         ax2.set_ylabel(r"$(E-I_p)/U_p$", fontsize = 12)
 
-        fig.colorbar(c, ax=ax, label=r"$|D(\omega)|^2$ [arb.u.]", pad = 0.1, orientation="vertical")
+        fig.colorbar(c, ax=ax, label=r"$|D(\omega)|$ [arb.u.]", pad = 0.1, orientation="vertical")
     else:
-        fig.colorbar(c, ax=ax, label=r"$|D(\omega)|^2$ [arb.u.]")
+        fig.colorbar(c, ax=ax, label=r"$|D(\omega)|$ [arb.u.]")
 
     fig.set_size_inches(figsize)
 
@@ -1450,7 +1450,7 @@ def plot_spectrum_multiple(
     fig, ax = plt.subplots()
 
     if labels == []:
-        labels = [r"$|D_{0}$".format(i)+r"$(\omega)|^2$" for i in range(0,len(ds))]
+        labels = [r"$|D_{0}$".format(i)+r"$(\omega)|$" for i in range(0,len(ds))]
 
     
     for i, spectrum_z in enumerate(spectra):
@@ -1481,7 +1481,7 @@ def plot_spectrum_multiple(
 
     ax.set_xlim(omegas[omega_min], omegas[omega_max])
     ax.set_ylim(y_min, spectrum_z[N_steps_per_freq*omega_min:-1].max()*1.2)
-    ax.set_ylabel(r"$|D(\omega)|^2$ [arb.u.]", fontsize=12)
+    ax.set_ylabel(r"$|D(\omega)|$ [arb.u.]", fontsize=12)
     ax.set_xlabel("H [-]", fontsize=12)
 
     plt.yscale(plot_scale)
@@ -1547,7 +1547,7 @@ def plot_integrals(
         norm = col
     )
     
-    fig.colorbar(c, ax=ax, label=r"$\int |D(\omega)|^2 d \omega$ [arb.u.]")
+    fig.colorbar(c, ax=ax, label=r"$\int |D(\omega)| d \omega$ [arb.u.]")
 
     ### Setting ticks
     yticks = range(omega_min, omega_max)
@@ -1630,7 +1630,8 @@ def plot_spectral_distribution(
         gridpoints = 150,
         near_field_factor = True,
         mirror = True,
-        plot_beam = False
+        plot_beam = False,
+        z_max = None
     ):
     '''
     Plot spectral distribution
@@ -1769,7 +1770,8 @@ def plot_spectral_distribution(
     z = np.transpose(z)
 
     ### Colormesh plot
-    z_max = z[:,rng].max()
+    if z_max == None:
+        z_max = z[:,rng].max()
 
     fig, ax = plt.subplots()
     
