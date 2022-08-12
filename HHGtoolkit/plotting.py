@@ -965,7 +965,7 @@ def plot_fields(
         data, 
         plot_3D = True, 
         norm_T = False, 
-        cycles =[0,-1], 
+        cycles = None, 
         legend = True,
         figsize = (7,5)
     ):
@@ -992,8 +992,9 @@ def plot_fields(
         Plot fields in 3D.
     norm_T: bool, optional, default: False
         Norm time axis to the optical cycles of the fundamental field.
-    cycles: array, default: [0, -1]
+    cycles: array, default: None
         Limit number of cycles of the field for plotting, -1: end of the pulse.
+        Example: plot from cycle 4 to the last one: cycles = [4, -1]
     legend: bool, optional, default: True
         Set legend visible.
     figsize: tuple, optional, default: (7, 5)
@@ -1015,20 +1016,21 @@ def plot_fields(
     ### Number of point per one cycle
     N = len(t)//int(N_cycl_1)
 
-    if cycles[1] != -1 and cycles[1] > N_cycl_1:
-        raise ValueError("Optical cycles exceed maximum cycles in pulse.")
-    if cycles[1] == -1:
-        cycles[1] = N_cycl_1
 
-    ### Create slice for optical cycles of interest
-    plt_range = slice(int(cycles[0]*N), int(cycles[1]*N))
+    if cycles != None:
+        if cycles[1] != -1 and cycles[1] > N_cycl_1:
+            raise ValueError("Optical cycles exceed maximum cycles in pulse.")
+        if cycles[1] == -1:
+            cycles[1] = N_cycl_1
+        ### Create slice for optical cycles of interest
+        plt_range = slice(int(cycles[0]*N), int(cycles[1]*N))
 
-    ### Time frame
-    t = t[plt_range]
+        ### Time frame
+        t = t[plt_range]
 
-    ### Fields data
-    E_z = E_z[plt_range]
-    E_x = E_x[plt_range]
+        ### Fields data
+        E_z = E_z[plt_range]
+        E_x = E_x[plt_range]
 
     if plot_3D:
         fig = plt.subplots()
