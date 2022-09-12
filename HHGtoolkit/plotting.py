@@ -300,7 +300,7 @@ def plot_scan(
         Show secondary energy axis in the plot.
     plot_scale: {'log', 'linear'}, optional, default: 'log'
         Plot with logarithmic or linear scale.
-    scan_variable: {'phase', 'intensity', 'amplitude'}, optional, default: 'phase'
+    scan_variable: {'phase', 'intensity', 'amplitude', 'theta_waveplate'}, optional, default: 'phase'
         Plot y-axis labels corresponding to scan in phase, intensity or amplitude.
     normalize: bool, optional, default: False
         Normalize each slice maximum to one. 
@@ -403,6 +403,13 @@ def plot_scan(
         labels_y = [r"${:.2f}$".format(val) for val in vals_y]
 
         axis_label = r"$E/E_0$"
+    elif scan_variable == 'theta_waveplate':
+        A_min = ds[-1].E0_1
+        A_max = ds[0].E0_1
+
+        vals_y = np.linspace(np.arccos(1), np.arccos(A_min/A_max), N_y_ticks)
+        labels_y = [r"${:.2f}$°".format(val/np.pi*180) for val in vals_y]
+        axis_label = r"$\theta_{MO}$"
     else:
         raise ValueError("Unknown scan variable '{}'".format(scan_variable))
 
@@ -1086,8 +1093,8 @@ def plot_fields(
         ax.set_ylim(-(E0_1 + E0_2), (E0_1 + E0_2))
         ax.set_zlim(-(E0_1 + E0_2), (E0_1 + E0_2))
 
-        E_ticks = [-np.max([np.max(E_z), np.max(E_x)]), 0, np.max([np.max(E_z), np.max(E_x)])]
-        E_ticks_lbl = [r"$-E_{0}$", "0", r"$E_{0}$"]
+        #E_ticks = [-np.max([np.max(E_z), np.max(E_x)]), 0, np.max([np.max(E_z), np.max(E_x)])]
+        #E_ticks_lbl = [r"$-E_{0}$", "0", r"$E_{0}$"]
 
         ### Norm to the optical cycles of the fundamental field
         if (norm_T):
@@ -1095,10 +1102,10 @@ def plot_fields(
         else:
             ax.set_xlabel(r"$t$ [a.u.]", fontsize=12)
 
-        ax.set_yticks(E_ticks)
-        ax.set_zticks(E_ticks)
-        ax.set_zticklabels(E_ticks_lbl)
-        ax.set_yticklabels(E_ticks_lbl)
+        #ax.set_yticks(E_ticks)
+        #ax.set_zticks(E_ticks)
+        #ax.set_zticklabels(E_ticks_lbl)
+        #ax.set_yticklabels(E_ticks_lbl)
         ax.grid(False)
 
         plt.show()

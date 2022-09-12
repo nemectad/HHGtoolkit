@@ -20,10 +20,10 @@ def spectrum(arr, t_step):
         return 2 / N * np.abs(fft(arr)[:, 0 : N // 2]), tf
 
 
-def window(arr, win = blackman):
+def window(arr, *args, win = blackman, **kwargs):
     N = len(arr)
     ### Window weights
-    w = np.array(win(N))
+    w = np.array(win(N, *args, **kwargs))
 
     ### element-by-element multiplication
     return np.multiply(arr, w)
