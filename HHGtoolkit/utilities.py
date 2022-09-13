@@ -41,6 +41,12 @@ class Data:
         self.CEP_2 = input_data['CEP_2'][()]
 
         try:
+            self.delay = input_data['delay_between_pulses'][()]
+        except KeyError:
+            #print("Warning: no time delay information in the data.")
+            pass
+
+        try:
             self.w0_1 = input_data["waist_1"][()]
             self.w0_2 = input_data["waist_2"][()]
             self.z0_1 = input_data["focus_1"][()]

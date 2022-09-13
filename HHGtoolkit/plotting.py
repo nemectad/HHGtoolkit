@@ -1,7 +1,7 @@
 '''
 Module plotting
 ===============
-Author: Tadeáš Němec 2021, CTU FJFI
+Author: Tadeáš Němec 2022, CTU FJFI
 
 Module containing methods for data visualisation from the SFA code. 
 
@@ -300,7 +300,7 @@ def plot_scan(
         Show secondary energy axis in the plot.
     plot_scale: {'log', 'linear'}, optional, default: 'log'
         Plot with logarithmic or linear scale.
-    scan_variable: {'phase', 'intensity', 'amplitude', 'theta_waveplate'}, optional, default: 'phase'
+    scan_variable: {'phase', 'intensity', 'amplitude', 'theta_waveplate', 'delay'}, optional, default: 'phase'
         Plot y-axis labels corresponding to scan in phase, intensity or amplitude.
     normalize: bool, optional, default: False
         Normalize each slice maximum to one. 
@@ -317,13 +317,31 @@ def plot_scan(
     freq_0 = omega_0/ (2*np.pi)
     N_steps_per_freq = int(freq_0*t[-1]) + 1
 
-    ### Compute spectrum and time domain for spectrum
-    if (plot_component == "x"):
-        z, tf = process.spectrum([data.d_x for data in ds], T_step)
-        lbl = r"$|D_x(\omega)|$"
+    ### Arrays for delay have different lengths
+    if scan_variable == 'delay':
+        N_max = np.argmax([d.t[-1] for d in ds])
+        #t_max = ds[N_max].t
+        N = len(ds[N_max].d_z)
+        z = 1e-13*np.ones((len(ds),N))
+        ### Compute spectrum and time domain for spectrum
+        if (plot_component == "x"):
+            for i, d in enumerate(ds):
+                z[i,0:len(d.d_x)] = d.d_x
+            z, tf = process.spectrum(z, T_step)
+            lbl = r"$|D_x(\omega)|$"
+        else:
+            for i, d in enumerate(ds):
+                z[i,0:len(d.d_z)] = d.d_z
+            z, tf = process.spectrum(z, T_step)
+            lbl = r"$|D_z(\omega)|$"
     else:
-        z, tf = process.spectrum([data.d_z for data in ds], T_step)
-        lbl = r"$|D_z(\omega)|$"
+    ### Compute spectrum and time domain for spectrum
+        if (plot_component == "x"):
+            z, tf = process.spectrum(np.array([data.d_x for data in ds]), T_step)
+            lbl = r"$|D_x(\omega)|$"
+        else:
+            z, tf = process.spectrum(np.array([data.d_z for data in ds]), T_step)
+            lbl = r"$|D_z(\omega)|$"
 
     ### Setting ticks
     ### x-axis
@@ -410,6 +428,16 @@ def plot_scan(
         vals_y = np.linspace(np.arccos(1), np.arccos(A_min/A_max), N_y_ticks)
         labels_y = [r"${:.2f}$°".format(val/np.pi*180) for val in vals_y]
         axis_label = r"$\theta_{MO}$"
+    elif scan_variable == 'delay':
+        try:
+            t_min = ds[0].delay
+            t_max = ds[-1].delay
+        except KeyError:
+            print("No time delay information is provided in the data.")
+
+        vals_y = np.linspace(t_min, t_max, N_y_ticks)
+        labels_y = [r"${:.1f}$".format(val) for val in vals_y]
+        axis_label = r"$\tau_{delay}$"
     else:
         raise ValueError("Unknown scan variable '{}'".format(scan_variable))
 
