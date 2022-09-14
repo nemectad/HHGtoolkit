@@ -1050,7 +1050,8 @@ def plot_fields(
     t = data.t
     ### Number of point per one cycle
     N = len(t)//int(N_cycl_1)
-
+    ### Maximum of the electric field
+    E_max = np.max([np.max(np.abs(E_z)), np.max(np.abs(E_x))])
 
     if cycles != None:
         if cycles[1] != -1 and cycles[1] > N_cycl_1:
@@ -1066,6 +1067,8 @@ def plot_fields(
         ### Fields data
         E_z = E_z[plt_range]
         E_x = E_x[plt_range]
+        
+        E_max = np.max([np.max(np.abs(E_z)), np.max(np.abs(E_x))])
 
     if plot_3D:
         fig = plt.subplots()
@@ -1088,7 +1091,8 @@ def plot_fields(
             t,
             E_x,
             zdir="y",
-            zs=(E0_1 + E0_2),
+            #zs=(np.abs(E0_1) + np.abs(E0_2)),
+            zs=(1.2*E_max),
             label=r"$E_x$",
             linestyle="-",
             linewidth="0.5",
@@ -1098,7 +1102,8 @@ def plot_fields(
             t,
             E_z,
             zdir="z",
-            zs=-(E0_1 + E0_2),
+            #zs=-(np.abs(E0_1) + np.abs(E0_2)),
+            zs=(-1.2*E_max),
             label=r"$E_z$",
             linestyle="-",
             linewidth="0.5",
@@ -1118,8 +1123,8 @@ def plot_fields(
         if legend:
             ax.legend(loc=1)
 
-        ax.set_ylim(-(E0_1 + E0_2), (E0_1 + E0_2))
-        ax.set_zlim(-(E0_1 + E0_2), (E0_1 + E0_2))
+        ax.set_ylim(-1.2*E_max, 1.2*E_max)
+        ax.set_zlim(-1.2*E_max, 1.2*E_max)
 
         #E_ticks = [-np.max([np.max(E_z), np.max(E_x)]), 0, np.max([np.max(E_z), np.max(E_x)])]
         #E_ticks_lbl = [r"$-E_{0}$", "0", r"$E_{0}$"]
