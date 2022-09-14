@@ -260,7 +260,8 @@ def plot_scan(
         plot_scale = 'log',
         scan_variable = 'phase',
         normalize = False, 
-        figsize = (9,4)
+        figsize = (9,4),
+        intensity = False
     ):
     '''
     Plot scan
@@ -275,9 +276,10 @@ def plot_scan(
         z_min = 1e-8,
         plot_energy = False,
         plot_scale = 'log',
-        scan_variable = 'phase'
-        normalize = False
-        figsize = (9, 4)
+        scan_variable = 'phase',
+        normalize = False,
+        figsize = (9, 4),
+        intensity = False
     ):
 
     Plot phase scan of the harmonic spectrum.
@@ -306,6 +308,8 @@ def plot_scan(
         Normalize each slice maximum to one. 
     figsize: tuple, optional, default: (9, 4)
         Set figure size in inches - (width, height)
+    intensity: bool, optional, default: False
+        Plot the intensity of the harmonic signal, i.e. coherent sum of |D_x|^2 and |D_z|^2
     '''
     ### Loading data
     ds = util.load_dataset(dataset)
@@ -317,8 +321,24 @@ def plot_scan(
     freq_0 = omega_0/ (2*np.pi)
     N_steps_per_freq = int(freq_0*t[-1]) + 1
 
-    ### Arrays for delay have different lengths
-    if scan_variable == 'delay':
+    if intensity:
+        N_max = np.argmax([d.t[-1] for d in ds])
+        #t_max = ds[N_max].t
+        N = len(ds[N_max].d_z)
+        z = 1e-13*np.ones((len(ds),N))
+        x = 1e-13*np.ones((len(ds),N))
+        ### Compute spectrum and time domain for spectrum
+        for i, d in enumerate(ds):
+            x[i,0:len(d.d_x)] = d.d_x
+            z[i,0:len(d.d_z)] = d.d_z
+
+        z, tf = process.spectrum(z, T_step)
+        x, tf = process.spectrum(x, T_step)
+        lbl = ""
+
+        z = np.power(z, 2) + np.power(x, 2)
+
+    else:
         N_max = np.argmax([d.t[-1] for d in ds])
         #t_max = ds[N_max].t
         N = len(ds[N_max].d_z)
@@ -334,14 +354,7 @@ def plot_scan(
                 z[i,0:len(d.d_z)] = d.d_z
             z, tf = process.spectrum(z, T_step)
             lbl = r"$|D_z(\omega)|$"
-    else:
-    ### Compute spectrum and time domain for spectrum
-        if (plot_component == "x"):
-            z, tf = process.spectrum(np.array([data.d_x for data in ds]), T_step)
-            lbl = r"$|D_x(\omega)|$"
-        else:
-            z, tf = process.spectrum(np.array([data.d_z for data in ds]), T_step)
-            lbl = r"$|D_z(\omega)|$"
+
 
     ### Setting ticks
     ### x-axis
@@ -374,7 +387,10 @@ def plot_scan(
 
     ax.set_title(lbl)
 
-    fig.colorbar(c, ax=ax, label=r"$|D(\omega)|$ [arb.u.]")
+    if intensity:
+        fig.colorbar(c, ax=ax, label=r"$|D(\omega)|^2$ [arb.u.]")
+    else:
+        fig.colorbar(c, ax=ax, label=r"$|D(\omega)|$ [arb.u.]")
 
     ### Setting ticks
     ### y-axis
