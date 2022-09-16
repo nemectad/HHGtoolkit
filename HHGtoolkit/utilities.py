@@ -47,6 +47,27 @@ class Data:
             pass
 
         try:
+            self.theta_1 = input_data['theta_1'][()]
+            self.theta_2 = input_data['theta_2'][()]
+        except KeyError:
+            #print("Warning: no time theta information in the data.")
+            pass
+
+        try:
+            self.eps_1 = input_data['eps_1'][()]
+            self.eps_2 = input_data['eps_2'][()]
+        except KeyError:
+            #print("Warning: no time ellipticity information in the data.")
+            pass
+        
+        try:
+            self.eps_1 = input_data['tau_1'][()]
+            self.eps_2 = input_data['tau_2'][()]
+        except KeyError:
+            #print("Warning: no time pulse width information in the data.")
+            pass
+
+        try:
             self.w0_1 = input_data["waist_1"][()]
             self.w0_2 = input_data["waist_2"][()]
             self.z0_1 = input_data["focus_1"][()]

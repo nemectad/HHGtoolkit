@@ -438,17 +438,20 @@ def plot_scan(
 
         axis_label = r"$E/E_0$"
     elif scan_variable == 'theta_waveplate':
-        A_min = ds[-1].E0_1
-        A_max = ds[0].E0_1
-
-        vals_y = np.linspace(np.arccos(1), np.arccos(A_min/A_max), N_y_ticks)
-        labels_y = [r"${:.2f}$°".format(val/np.pi*180) for val in vals_y]
-        axis_label = r"$\theta_{MO}$"
+        try:
+            #vals_y = [d.theta_1+90 for d in ds]
+            vals_y = np.linspace(90 + ds[0].theta_1, 90 + ds[-1].theta_1, N_y_ticks)
+            #vals_y = vals_y[0:-1:len(vals_y)//(N_y_ticks+1)]
+            labels_y = [r"${:.2f}$°".format(val) for val in vals_y]
+            #labels_y = labels_y[0:-1:len(vals_y)//(N_y_ticks+1)]
+            axis_label = r"$\theta_{MO}$"
+        except AttributeError:
+            print("No theta information is provided in the data.")
     elif scan_variable == 'delay':
         try:
             t_min = ds[0].delay
             t_max = ds[-1].delay
-        except KeyError:
+        except AttributeError:
             print("No time delay information is provided in the data.")
 
         vals_y = np.linspace(t_min, t_max, N_y_ticks)
