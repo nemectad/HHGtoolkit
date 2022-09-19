@@ -261,7 +261,8 @@ def plot_scan(
         scan_variable = 'phase',
         normalize = False, 
         figsize = (9,4),
-        intensity = False
+        intensity = False,
+        z_max = None
     ):
     '''
     Plot scan
@@ -279,7 +280,8 @@ def plot_scan(
         scan_variable = 'phase',
         normalize = False,
         figsize = (9, 4),
-        intensity = False
+        intensity = False,
+        z_max = None
     ):
 
     Plot phase scan of the harmonic spectrum.
@@ -288,8 +290,8 @@ def plot_scan(
     -----------
     dataset: Dataset or str
         Loaded dataset or the name of the directory with slash '/'.
-    plot_component: {'z', 'x'}, optional, default: 'z'
-        The plotted component.
+    plot_component: {'z', 'x', 'zx'}, optional, default: 'z'
+        The plotted component. Note: 'zx' option works only if intensity == True.
     omega_min: int, optional, default: 0
         Minimum harmonics plotted.
     omega_max: int, optional, default: 50
@@ -310,6 +312,8 @@ def plot_scan(
         Set figure size in inches - (width, height)
     intensity: bool, optional, default: False
         Plot the intensity of the harmonic signal, i.e. coherent sum of |D_x|^2 and |D_z|^2
+    z_max: float, optional, defaul: None
+        Maximum threshold for colorbar.
     '''
     ### Loading data
     ds = util.load_dataset(dataset)
@@ -336,8 +340,17 @@ def plot_scan(
         x, tf = process.spectrum(x, T_step)
         lbl = ""
 
-        z = np.power(z, 2) + np.power(x, 2)
+        z = np.power(z, 2)
+        x = np.power(x, 2)
 
+        if plot_component == "zx":
+            z = z + x
+            lbl = r"$|\mathbf{D}(\omega)|^2$"
+        elif plot_component == "x":
+            z = x
+            lbl = r"$|D_x(\omega)|^2$"
+        else:
+            lbl = r"$|D_z(\omega)|^2$"
     else:
         N_max = np.argmax([d.t[-1] for d in ds])
         #t_max = ds[N_max].t
@@ -366,7 +379,8 @@ def plot_scan(
             z[i,:] = z[i,:]/z[i,N_steps_per_freq*omega_min:-1].max()
 
     ### Colormesh plot
-    z_max = z[:,N_steps_per_freq*omega_min:-1].max()
+    if z_max == None:
+        z_max = z[:,N_steps_per_freq*omega_min:-1].max()
 
     fig, ax = plt.subplots()
     
@@ -1713,7 +1727,8 @@ def plot_spectral_distribution(
         gridpoints = 150,
         near_field_factor = True,
         mirror = True,
-        plot_beam = False
+        plot_beam = False,
+        z_max = None
     ):
 
     Plot spectral distribution of the generated field.
@@ -1751,6 +1766,8 @@ def plot_spectral_distribution(
         Plot the spatially resolved spectrum symetrically along the axis.
     plot_beam: bool, optional, default: False
         Plot the driver beam.
+    z_max: float, optional, defaul: None
+        Maximum threshold for colorbar.
     '''
     ### Loading data
     ds = util.load_dataset(dataset)
