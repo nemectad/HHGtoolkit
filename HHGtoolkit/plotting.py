@@ -312,7 +312,7 @@ def plot_scan(
         Set figure size in inches - (width, height)
     intensity: bool, optional, default: False
         Plot the intensity of the harmonic signal, i.e. coherent sum of |D_x|^2 and |D_z|^2
-    z_max: float, optional, defaul: None
+    z_max: float, optional, default: None
         Maximum threshold for colorbar.
     '''
     ### Loading data
@@ -323,7 +323,7 @@ def plot_scan(
     T_step = t[1]-t[0]
     omega_0 = ds[0].omega_1
     freq_0 = omega_0/ (2*np.pi)
-    N_steps_per_freq = int(freq_0*t[-1]) + 1
+    N_steps_per_freq = int(freq_0*(t[-1]-t[0])) + 1
 
     if intensity:
         N_max = np.argmax([d.t[-1] for d in ds])
@@ -453,11 +453,9 @@ def plot_scan(
         axis_label = r"$E/E_0$"
     elif scan_variable == 'theta_waveplate':
         try:
-            #vals_y = [d.theta_1+90 for d in ds]
-            vals_y = np.linspace(90 + ds[0].theta_1, 90 + ds[-1].theta_1, N_y_ticks)
-            #vals_y = vals_y[0:-1:len(vals_y)//(N_y_ticks+1)]
+            ### (-) sign is for the transform back to the laboratory fram
+            vals_y = np.linspace(-ds[0].theta_1, -ds[-1].theta_1, N_y_ticks)
             labels_y = [r"${:.2f}$°".format(val) for val in vals_y]
-            #labels_y = labels_y[0:-1:len(vals_y)//(N_y_ticks+1)]
             axis_label = r"$\theta_{MO}$"
         except AttributeError:
             print("No theta information is provided in the data.")
@@ -611,7 +609,7 @@ def plot_dipole(
             dipole_z,
             dipole_x,
             zdir="x",
-            zs=0,
+            zs=t[0],
             label=r"$D_{xz}$",
             linestyle=":",
             linewidth="0.5",
@@ -758,8 +756,8 @@ def plot_dipole_polar(
     
     ### Filter spectrum
     if filter_harmonics != None:
-        dip_z, dip_x = process.harmonic_filter([dipole_z,dipole_x], t[-1], freq_0,  
-                        filter_harmonics, filter)
+        dipole_z, dipole_x = process.harmonic_filter([dipole_z,dipole_x], (t[-1]-t[0]), freq_0,  
+                        filter_harmonics)
 
     if cycles[1] != -1 and cycles[1] > N_cycl_1:
             raise ValueError("Optical cycles exceed maximum cycles in pulse.")        
@@ -1035,7 +1033,8 @@ def plot_fields(
         norm_T = False, 
         cycles = None, 
         legend = True,
-        figsize = (7,5)
+        figsize = (7,5),
+        A_potential = False
     ):
     '''
     Plot fields
@@ -1047,7 +1046,8 @@ def plot_fields(
         norm_T = False,
         cycles = [0, -1],
         legend = True,
-        figsize = (7,5)
+        figsize = (7,5),
+        A_potential = False
     ):
 
     Plot electric fields of the laser in 3D or in 2D projection. 
@@ -1067,6 +1067,8 @@ def plot_fields(
         Set legend visible.
     figsize: tuple, optional, default: (7, 5)
         Set figure size in inches - (width, height)
+    A_potential: bool, optional, default: False
+        Plot vector potential A instead of electric field E
     '''
 
     ### Check and load the data
@@ -1075,8 +1077,21 @@ def plot_fields(
     ### Electric fields
     E0_1 = data.E0_1
     E0_2 = data.E0_2
-    E_z = data.E_z
-    E_x = data.E_x
+    if A_potential:
+        E_z = data.A_z
+        E_x = data.A_x
+        label_ = r"$A(t) [a.u.]$"
+        label_z = r"$A_z$"
+        label_x = r"$A_x$"
+        label_zx = r"$A_{zx}$"
+    else:
+        E_z = data.E_z
+        E_x = data.E_x
+        label_ = r"$E(t) [a.u.]$"
+        label_z = r"$E_z$"
+        label_x = r"$E_x$"
+        label_zx = r"$E_{zx}$"
+
     ### Optical cycles
     N_cycl_1 = data.N_cycl_1
     ### Time grid
@@ -1114,7 +1129,7 @@ def plot_fields(
             E_x,
             t,
             zdir="x",
-            label=r"$E$",
+            label=label_,
             color="crimson",
             linewidth="1",
         )
@@ -1126,7 +1141,7 @@ def plot_fields(
             zdir="y",
             #zs=(np.abs(E0_1) + np.abs(E0_2)),
             zs=(1.2*E_max),
-            label=r"$E_x$",
+            label=label_x,
             linestyle="-",
             linewidth="0.5",
             color="black",
@@ -1137,7 +1152,7 @@ def plot_fields(
             zdir="z",
             #zs=-(np.abs(E0_1) + np.abs(E0_2)),
             zs=(-1.2*E_max),
-            label=r"$E_z$",
+            label=label_z,
             linestyle="-",
             linewidth="0.5",
             color="gray",
@@ -1147,7 +1162,7 @@ def plot_fields(
             E_x,
             zdir="x",
             zs=t[0],
-            label=r"$E_{xz}$",
+            label=label_zx,
             linestyle=":",
             linewidth="0.5",
             color="black",
@@ -1187,19 +1202,19 @@ def plot_fields(
         ax.plot(
             t,
             E_z,
-            label=r"$E_z$",
+            label=label_z,
             color="black",
             linewidth="1",
         )
         ax.plot(
             t,
             E_x,
-            label=r"$E_x$",
+            label=label_x,
             color="crimson",
             linewidth="1",
         )
         ax.legend(loc=1)
-        ax.set_ylabel(r"$E(t)$ [a.u.]", fontsize = 12)
+        ax.set_ylabel(label_, fontsize = 12)
         fig.tight_layout()
         fig.set_size_inches(figsize)
         plt.show()
@@ -2000,7 +2015,7 @@ def plot_spectral_distribution_legacy(
     T_step = t[1]-t[0]
     omega_0 = ds[0].omega_1
     freq_0 = omega_0/ (2*np.pi)
-    N_steps_per_freq = int(freq_0*t[-1]) + 1
+    N_steps_per_freq = int(freq_0*(t[-1]-t[0])) + 1
 
     ### get spectrum
     if (plot_component == "x"):

@@ -101,21 +101,21 @@ def sigmoid(len):
     y = 1/(1 + np.exp(-x)) 
     return -y + 1
 
-def harmonic_filter(arr, t_max, field_freq, harmonic_freq, filter_type, **kwargs):
+def harmonic_filter(arr, t_max, field_freq, harmonic_freq, filter_type = "bandpass", *args, **kwargs):
     N_steps_per_freq = int(field_freq*t_max) + 1
 
     if filter_type == "bandpass":
-        range_ = [N_steps_per_freq*harmonic_freq - N_steps_per_freq,
-                    N_steps_per_freq*harmonic_freq + N_steps_per_freq]
+        range_ = [N_steps_per_freq*harmonic_freq - N_steps_per_freq//2,
+                    N_steps_per_freq*harmonic_freq + N_steps_per_freq//2]
     elif filter_type == "lowpass":
-        range_ = [0, N_steps_per_freq*(harmonic_freq)]
+        range_ = [0, int(N_steps_per_freq*(harmonic_freq+1/2))]
     else:
-        raise ValueError("Unknown filter '" + filter + "', "
+        raise ValueError("Unknown filter '" + filter_type + "', "
             "allowed filters are: 'bandpass' and 'lowpass'.")
     ### Apply spectral filter
-    return spectral_filter(arr, range_, filter_type, **kwargs)
+    return spectral_filter(arr, range_, filter_type, *args, **kwargs)
 
-def spectral_filter(arr, range_, filter_type, win = blackman, len_ = 20):
+def spectral_filter(arr, range_, filter_type, win = blackman, len_ = 20, *args, **kwargs):
     N = np.shape(arr)[-1]
 
     ### Compute FFT
@@ -124,7 +124,7 @@ def spectral_filter(arr, range_, filter_type, win = blackman, len_ = 20):
     ### Create corresponding kernel
     if filter_type == 'bandpass':
         kernel = np.zeros(N)
-        kernel[range_[0]:range_[1]] = win(range_[1]-range_[0])
+        kernel[range_[0]:range_[1]] = win(range_[1]-range_[0], *args, **kwargs)
     elif filter_type == 'lowpass':
         kernel = np.ones(N)
         kernel[range_[1]:(range_[1]+len_)] = sigmoid(len_)
@@ -170,7 +170,7 @@ def stokes_params_from_file(h5_file, norm = True, filter_harmonics = None):
     freq_0 = data.omega_1 / (2 * np.pi)
 
     if filter_harmonics != None:
-        dipole_z, dipole_x = harmonic_filter([dipole_z,dipole_x], t[-1], freq_0,  
+        dipole_z, dipole_x = harmonic_filter([dipole_z,dipole_x], (t[-1]-t[0]), freq_0,  
                         filter_harmonics, 'bandpass')
 
     return stokes_params(dipole_z, dipole_x, t, norm = norm)
