@@ -29,6 +29,13 @@ class Data:
         except KeyError:
             pass
 
+        try:
+            self.j = results["Current"][()]
+            self.p = results["Population"][()]
+        except KeyError:
+            #print("Warning: no time current and population information in the data.")
+            pass
+
         ### Input parameters
         self.omega_1 = input_data["omega_1"][()]
         self.omega_2 = input_data["omega_2"][()]
