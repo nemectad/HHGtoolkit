@@ -84,6 +84,26 @@ class Data:
         except KeyError:
             pass
 
+        try: 
+            self.x = np.array(results["xgrid"][:])
+            psi = np.array(results["psi"][:])
+            self.psi = np.array([psi[2*i] + 1j*psi[2*i+1] for i in range(len(self.x))], dtype=np.complex)
+            psi0 = np.array(results["ground_state"][:])
+            self.psi0 = np.array([psi0[2*i] + 1j*psi0[2*i+1] for i in range(len(self.x))], dtype=np.complex)
+            self.pop = np.array(results["population"][:])
+            self.j = np.array(results["current"][:])
+            self.pot = np.array(results["potential"][:])
+            self.E_ground = results["E_ground_state"][()]
+        except KeyError:
+            pass
+
+        try:
+            grad_pot_re = np.array(results["grad_pot"][:,0])
+            grad_pot_im = np.array(results["grad_pot"][:,1])
+            self.grad_pot = np.array(grad_pot_re + 1j*grad_pot_im, dtype=np.complex)
+        except KeyError:
+            pass
+
         ### Numerics parameters        
         self.N_int = input_data["points_per_cycle_for_integration"][()]
         self.N_pts = input_data["points_per_cycle_for_evaluation"][()]
