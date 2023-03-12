@@ -16,12 +16,15 @@ class Data:
 
         ### Output values
         self.t = np.array(results["tgrid"][:])
-        self.d_z = np.array(results["dipole"][:, 0])
-        self.d_x = np.array(results["dipole"][:, 1])
-        self.A_z = np.array(results["Afield"][:, 0])
-        self.A_x = np.array(results["Afield"][:, 1])
         self.E_z = np.array(results["Efield"][:, 0])
         self.E_x = np.array(results["Efield"][:, 1])
+        try:
+            self.d_z = np.array(results["dipole"][:, 0])
+            self.d_x = np.array(results["dipole"][:, 1])
+            self.A_z = np.array(results["Afield"][:, 0])
+            self.A_x = np.array(results["Afield"][:, 1])
+        except KeyError:
+            pass
         
         try:
             self.I_z = np.array(results["integrand"][0, :, 0]) + 1j*np.array(results["integrand"][1, :, 0])
@@ -46,6 +49,10 @@ class Data:
         self.N_cycl_2 = input_data["number_of_cycles_2"][()]
         self.CEP_1 = input_data['CEP_1'][()]
         self.CEP_2 = input_data['CEP_2'][()]
+        try:
+            self.dz = input_data["dz"][()]
+        except KeyError:
+            pass
 
         try:
             self.delay = input_data['delay_between_pulses'][()]
@@ -87,9 +94,9 @@ class Data:
         try: 
             self.x = np.array(results["xgrid"][:])
             psi = np.array(results["psi"][:])
-            self.psi = np.array([psi[2*i] + 1j*psi[2*i+1] for i in range(len(self.x))], dtype=np.complex)
+            self.psi = np.array([psi[2*i] + 1j*psi[2*i+1] for i in range(len(self.x))], dtype=complex)
             psi0 = np.array(results["ground_state"][:])
-            self.psi0 = np.array([psi0[2*i] + 1j*psi0[2*i+1] for i in range(len(self.x))], dtype=np.complex)
+            self.psi0 = np.array([psi0[2*i] + 1j*psi0[2*i+1] for i in range(len(self.x))], dtype=complex)
             self.pop = np.array(results["population"][:])
             self.j = np.array(results["current"][:])
             self.pot = np.array(results["potential"][:])
@@ -100,7 +107,7 @@ class Data:
         try:
             grad_pot_re = np.array(results["grad_pot"][:,0])
             grad_pot_im = np.array(results["grad_pot"][:,1])
-            self.grad_pot = np.array(grad_pot_re + 1j*grad_pot_im, dtype=np.complex)
+            self.grad_pot = np.array(grad_pot_re + 1j*grad_pot_im, dtype=complex)
         except KeyError:
             pass
 
