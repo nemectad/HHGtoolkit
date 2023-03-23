@@ -105,8 +105,8 @@ def harmonic_filter(arr, t_max, field_freq, harmonic_freq, filter_type = "bandpa
     N_steps_per_freq = int(field_freq*t_max) + 1
 
     if filter_type == "bandpass":
-        range_ = [N_steps_per_freq*harmonic_freq - N_steps_per_freq//2,
-                    N_steps_per_freq*harmonic_freq + N_steps_per_freq//2]
+        range_ = [int(N_steps_per_freq*harmonic_freq) - N_steps_per_freq//2,
+                    int(N_steps_per_freq*harmonic_freq) + N_steps_per_freq//2]
     elif filter_type == "lowpass":
         range_ = [0, int(N_steps_per_freq*(harmonic_freq+1/2))]
     else:
