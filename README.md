@@ -18,16 +18,23 @@ Library contains in total 6 submodules: `conversions.py`, `Hfn2.py`, `init_param
 
 `utilites.py`: Data and Dataset classes for HDF5 files loading and Beam class for gaussian beams plotting and parameters.
 
-## Installation
+## Installation using pip
+Run the following command in terminal:
+```bash
+pip install git+https://github.com/nemectad/HHGtoolkit.git
+```
+
+## Custom installation
 1. Download the directory from Github: https://github.com/nemectad/HHGtoolkit.git
-2. In terminal/CLI: move into the Download directory and into the root folder of the module.
-3. Run the following command in your base environment:
+2. Move into the Download directory and move the folder into a dedicated directory.
+3. In terminal, move into the root folder of the module.
+4. Run the following command in your base environment:
   ```bash
   python3 setup.py install
   ```
-4. All done.
+5. All done.
 
-Now you should by able to access the methods contained in the module simply by typing
+Now you should be able to access the methods contained in the module simply by typing
 ```python
 import HHGtoolkit
 ```
