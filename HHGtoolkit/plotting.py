@@ -46,7 +46,7 @@ import HHGtoolkit.conversions as conv
 import HHGtoolkit.process as process
 from scipy.signal.windows import *
 import HHGtoolkit.Hfn2 as hfn
-import mynumerics.mynumerics as mn
+import mynumerics as mn
 
 
 matplotlib.rcParams.update({
